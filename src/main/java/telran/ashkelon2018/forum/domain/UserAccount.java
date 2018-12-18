@@ -20,7 +20,7 @@ import lombok.Singular;
 @Setter
 @Builder
 @EqualsAndHashCode(of = { "login" })
-@Document(collection = "forum_users")
+@Document(collection = "user_security")
 public class UserAccount {
 	@Id
 	String login;
@@ -32,11 +32,11 @@ public class UserAccount {
 	LocalDateTime expdate;
 
 	public void addRole(String role) {
-		roles.add(role);
+		roles.add("ROLE_"+role.toUpperCase());
 	}
 
 	public void removeRole(String role) {
-		roles.remove(role);
+		roles.remove("ROLE_"+role.toUpperCase());
 	}
 
 }

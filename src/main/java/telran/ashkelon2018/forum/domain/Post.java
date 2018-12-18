@@ -18,7 +18,7 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode(of = { "id" })
 @ToString
-//@Document(collection = "forum_security")
+@Document(collection = "forum_security")
 public class Post {
 	String id;
 	@Setter String title;
