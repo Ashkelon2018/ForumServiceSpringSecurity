@@ -13,6 +13,7 @@ import telran.ashkelon2018.forum.dto.DatePeriodDto;
 import telran.ashkelon2018.forum.dto.NewCommentDto;
 import telran.ashkelon2018.forum.dto.NewPostDto;
 import telran.ashkelon2018.forum.dto.PostUpdateDto;
+import telran.ashkelon2018.forum.exceptions.ForbiddenException;
 
 @Service
 public class ForumServiceImpl implements ForumService {
@@ -21,14 +22,14 @@ public class ForumServiceImpl implements ForumService {
 	ForumRepository repository;
 
 	@Override
-	public Post addNewPost(NewPostDto newPost) {
-		Post post = convertToPost(newPost);
+	public Post addNewPost(NewPostDto newPost, String author) {
+		Post post = convertToPost(newPost, author);
 		return repository.save(post);
 	}
 
-	private Post convertToPost(NewPostDto newPost) {
+	private Post convertToPost(NewPostDto newPost, String author) {
 		return new Post(newPost.getTitle(), newPost.getContent(),
-				newPost.getAuthor(), newPost.getTags());
+				author, newPost.getTags());
 	}
 
 	@Override
@@ -46,11 +47,15 @@ public class ForumServiceImpl implements ForumService {
 	}
 
 	@Override
-	public Post updatePost(PostUpdateDto postUpdateDto) {
+	public Post updatePost(PostUpdateDto postUpdateDto, String login) {
 		Post post = repository.findById(postUpdateDto.getId()).orElse(null);
 		if (post != null) {
-			post.setContent(postUpdateDto.getContent());
-			repository.save(post);
+			if (post.getAuthor().equals(login)) {
+				post.setContent(postUpdateDto.getContent());
+				repository.save(post);
+			}else {
+				throw new ForbiddenException();
+			}
 		}
 		return post;
 	}

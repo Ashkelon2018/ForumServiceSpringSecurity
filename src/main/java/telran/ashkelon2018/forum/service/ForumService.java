@@ -9,13 +9,13 @@ import telran.ashkelon2018.forum.dto.NewPostDto;
 import telran.ashkelon2018.forum.dto.PostUpdateDto;
 
 public interface ForumService {
-	Post addNewPost(NewPostDto newPost);
+	Post addNewPost(NewPostDto newPost, String author);
 
 	Post getPost(String id);
 
 	Post removePost(String id);
 
-	Post updatePost(PostUpdateDto postUpdateDto);
+	Post updatePost(PostUpdateDto postUpdateDto, String login);
 
 	boolean addLike(String id);
 

@@ -1,33 +1,42 @@
 package telran.ashkelon2018.forum.service.security;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-public class UserDetailsImpl implements UserDetails {
+import telran.ashkelon2018.forum.domain.UserAccount;
 
+public class UserDetailsImpl implements UserDetails {
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	UserAccount userAccount;
+
+	public UserDetailsImpl(UserAccount userAccount) {
+		this.userAccount = userAccount;
+	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
-		return null;
+		return userAccount.getRoles().stream()
+				.map(SimpleGrantedAuthority::new)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public String getPassword() {
-		// TODO Auto-generated method stub
-		return null;
+		return userAccount.getPassword();
 	}
 
 	@Override
 	public String getUsername() {
-		// TODO Auto-generated method stub
-		return null;
+		return userAccount.getLogin();
 	}
 
 	@Override

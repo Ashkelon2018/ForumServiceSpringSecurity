@@ -1,5 +1,6 @@
 package telran.ashkelon2018.forum.controller;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +27,8 @@ public class ForumController {
 	ForumService service;
 
 	@PostMapping("/post")
-	public Post addPost(@RequestBody NewPostDto newPost) {
-		return service.addNewPost(newPost);
+	public Post addPost(@RequestBody NewPostDto newPost, Principal principal) {
+		return service.addNewPost(newPost, principal.getName());
 	}
 
 	@GetMapping("/post/{id}")
@@ -41,8 +42,8 @@ public class ForumController {
 	}
 
 	@PutMapping("/post")
-	public Post updatePost(@RequestBody PostUpdateDto postUpdateDto) {
-		return service.updatePost(postUpdateDto);
+	public Post updatePost(@RequestBody PostUpdateDto postUpdateDto, Principal principal) {
+		return service.updatePost(postUpdateDto, principal.getName());
 	}
 
 	@PutMapping("/post/{id}/like")

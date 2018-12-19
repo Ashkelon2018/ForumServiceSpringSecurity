@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,7 +37,7 @@ public class AccountManagmentController {
 	}
 
 	@DeleteMapping("/{id}")
-	//FIXME
+	@PreAuthorize("#id == authentication.name or hasAnyRole('ADMIN', 'MODERATOR')")
 	public UserProfileDto remove(@PathVariable String id) {
 		return accountService.removeUser(id);
 	}
@@ -47,13 +48,11 @@ public class AccountManagmentController {
 	}
 	
 	@PutMapping("/role/{id}/{role}")
-	//FIXME
 	public Set<String> addRole(@PathVariable String id, @PathVariable String role) {
 		return accountService.addRole(id, role);
 	}
 	
 	@DeleteMapping("/role/{id}/{role}")
-	//FIXME
 	public Set<String> removeRole(@PathVariable String id, @PathVariable String role) {
 		return accountService.removeRole(id, role);
 	}

@@ -1,5 +1,6 @@
 package telran.ashkelon2018.forum.service.security;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ public class UserDetailServiceImpl implements UserDetailsService {
 				orElseThrow(() -> new UsernameNotFoundException(username));
 		String password = userAccount.getPassword();
 		Set<String> setRoles = userAccount.getRoles();
+		if (userAccount.getExpdate().isBefore(LocalDateTime.now())) {
+			setRoles.clear();
+		}
 		return new User(username, password, 
 				AuthorityUtils.createAuthorityList(setRoles.toArray(new String[setRoles.size()])));
 	}

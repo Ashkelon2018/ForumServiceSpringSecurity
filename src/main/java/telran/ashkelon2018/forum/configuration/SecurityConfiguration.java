@@ -1,12 +1,12 @@
 package telran.ashkelon2018.forum.configuration;
 
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 
 import static telran.ashkelon2018.forum.api.ForumEndPoint.*;
 
@@ -24,25 +24,42 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.httpBasic();
 		http.csrf().disable();
-		http.authorizeRequests().antMatchers(FORUM_POSTS+"/**").permitAll();
-		http.authorizeRequests().antMatchers(HttpMethod.GET,
-				ACCOUNT, FORUM_POST+"/*").authenticated();
-		http.authorizeRequests().antMatchers(HttpMethod.POST,	
-				FORUM_POST).authenticated();
-		http.authorizeRequests().antMatchers(HttpMethod.PUT, 
-				FORUM_POST+"/*/like").authenticated();
-		http.authorizeRequests().antMatchers(HttpMethod.PUT, 
-				FORUM_POST+"/*/comment").authenticated();
-		http.authorizeRequests().antMatchers(ACCOUNT_ROLE+"/**").hasRole("ADMIN");
+		http.sessionManagement()
+		.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		http.authorizeRequests()
+			.antMatchers(FORUM_POSTS+"/**")
+			.permitAll();
+		http.authorizeRequests()
+			.antMatchers(ACCOUNT_ROLE+"/**")
+			.hasRole("ADMIN");
+		http.authorizeRequests()
+			.antMatchers(HttpMethod.GET, ACCOUNT, FORUM_POST+"/*")
+			.hasAnyRole("ADMIN", "USER", "MODERATOR");
+		http.authorizeRequests()
+			.antMatchers(HttpMethod.POST, FORUM_POST)
+			.hasAnyRole("ADMIN", "USER", "MODERATOR");
+		http.authorizeRequests()
+			.antMatchers(HttpMethod.PUT, ACCOUNT, FORUM_POST, FORUM_POST+"/*/like",
+					FORUM_POST+"/*/comment")
+			.hasAnyRole("ADMIN", "USER", "MODERATOR");
+		http.authorizeRequests()
+			.antMatchers(HttpMethod.PUT, ACCOUNT_PASSWORD)
+			.authenticated();
+		//FIXME
+		http.authorizeRequests()
+			.antMatchers(HttpMethod.DELETE, FORUM_POST+"/{id}")
+			.access("@webSecurity.checkAuthorityForDeletePost(authentication,#id)");
 		
-//		String ACCOUNT = "/account"; //PUT-OWNER 
-//		String ACCOUNT_ID = "/account/{id}"; //DELETE OWNER, ADMIN MODERATOR
+		
+		
+//		String ACCOUNT = "/account"; 
+//		String ACCOUNT = "/account/{id}"; 
 //		String ACCOUNT_ROLE = "/account/role/{id}/{role}";
-//		String ACCOUNT_PASSWORD = "/account/password"; //PUT OWNER
-//		String FORUM_POST = "/forum/post"; PUT - OWNER
-//		String FORUM_POST_ID = "/forum/post/{id}";  DELETE - OWNER ADMIN MODERATOR
-//		String FORUM_POST_LIKE ="/forum/post/{id}/like"; 
-//		String FORUM_POST_COMMENT ="/forum/post/{id}/comment";
+//		String ACCOUNT_PASSWORD = "/account/password"; 
+//		String FORUM_POST = "/forum/post";
+//		String FORUM_POST = "/forum/post/{id}";
+//		String FORUM_POST ="/forum/post/{id}/like"; 
+//		String FORUM_POST ="/forum/post/{id}/comment";
 //		String FORUM_POSTS = "/forum/posts"; 
 		
 	}
