@@ -45,11 +45,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests()
 			.antMatchers(HttpMethod.PUT, ACCOUNT_PASSWORD)
 			.authenticated();
-		//FIXME
 		http.authorizeRequests()
 			.antMatchers(HttpMethod.DELETE, FORUM_POST+"/{id}")
 			.access("@webSecurity.checkAuthorityForDeletePost(authentication,#id)");
-		
+		http.authorizeRequests()
+		.antMatchers("/actuator/**")
+		.hasRole("ADMIN");
 		
 		
 //		String ACCOUNT = "/account"; 
